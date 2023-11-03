@@ -13,7 +13,7 @@ const commands = [
     .setDescription('Roll the dice!')
     .addIntegerOption(option =>
       option
-      .setName('number of dice')
+      .setName('amount')
         .setDescription('Number of dice to roll (1 or 2)')
         .setRequired(true)
     )
@@ -60,7 +60,7 @@ client.on('interactionCreate', async (interaction) => {
   const { commandName, options } = interaction;
 
   if (commandName === 'roll') {
-    const numDice = options.getInteger('number of dice');
+    const numDice = options.getInteger('amount');
     const sides = options.getInteger('sides');
 
     if (numDice === 1 || numDice === 2) {
