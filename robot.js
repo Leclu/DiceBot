@@ -10,7 +10,13 @@ const guildId = '';
 const commands = [
   new SlashCommandBuilder()
     .setName('roll')
-    .setDescription('Roll a die')
+    .setDescription('Roll the dice!')
+    .addIntegerOption(option =>
+      option
+      .setName('num_dice')
+        .setDescription('Number of dice to roll (1 or 2)')
+        .setRequired(true)
+    )
     .addIntegerOption(option =>
       option
         .setName('sides')
@@ -43,17 +49,9 @@ const client = new Client({
   ]
 });
 
-client.on('ready', () => {
+client.once('ready', () => {
   console.log(`Logged in as ${client.user.tag}`);
-  client.user.setPresence({
-    activities: [
-      {
-        name: 'Roll the dice...',
-        type: 'PLAYING',
-      },
-    ],
-    status: 'idle',
-  });
+  client.user.setActivity('Rolling the dice...', { type: 'PLAYING' });
 });
 
 client.on('interactionCreate', async (interaction) => {
@@ -62,14 +60,29 @@ client.on('interactionCreate', async (interaction) => {
   const { commandName, options } = interaction;
 
   if (commandName === 'roll') {
+    const numDice = options.getInteger('num_dice');
     const sides = options.getInteger('sides');
-    if (sides) {
-      if (sides && [4, 6, 8, 10, 12, 20].includes(sides)) {
-        const result = Math.floor(Math.random() * sides) + 1;
-        await interaction.reply(`You rolled a D${sides} and got: ${result}`);
+
+    if (numDice === 1 || numDice === 2) {
+      if ([4, 6, 8, 10, 12, 20].includes(sides)) {
+        let results = [];
+
+        for (let i = 0; i < numDice; i++) {
+          const result = Math.floor(Math.random() * sides) + 1;
+          results.push(result);
+        }
+
+        const diceText = numDice === 1 ? 'a' : 'two';
+        await interaction.reply(`You rolled ${numDice === 1 ? 'a' : 'two'} D${sides} and got: **${results.join(' and ')}**`);
       } else {
-        await interaction.reply('That die does not exist!');
+        if (numDice === 1) {
+          await interaction.reply('**That die does not exist!**');
+        } else {
+          await interaction.reply('**Those dice do not exist!**');
+        }
       }
+    } else {
+      await interaction.reply('**Too many dice, silly!**');
     }
   }
 });
