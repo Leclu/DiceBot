@@ -7,6 +7,8 @@ const token = '';
 const clientId = '';
 const guildId = '';
 
+// These are slash commands
+
 const commands = [
   new SlashCommandBuilder()
     .setName('roll')
@@ -53,6 +55,8 @@ client.once('ready', () => {
   console.log(`Logged in as ${client.user.tag}`);
   client.user.setActivity('Rolling the dice...', { type: 'PLAYING' });
 });
+
+// This section is for the rolling of dice
 
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isCommand()) return;
